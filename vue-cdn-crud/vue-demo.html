@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Vue CRUD Learning Tabs</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+    }
+    .tabs button {
+      margin: 0 5px;
+      padding: 10px 15px;
+      cursor: pointer;
+    }
+    .tabs button.active {
+      background-color: #42b883;
+      color: white;
+    }
+    .lesson {
+      margin-top: 1.5rem;
+    }
+    input {
+      margin-right: 10px;
+    }
+    ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    li {
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <h1>Vue 3 CRUD Learning Demo</h1>
+
+    <!-- Navigation Tabs -->
+    <div class="tabs">
+      <button v-for="(tab, i) in tabs" :key="i" @click="currentTab = i" :class="{ active: currentTab === i }">
+        {{ tab.name }}
+      </button>
+    </div>
+
+    <!-- Tab Contents -->
+    <div class="lesson">
+      <!-- Step 1: Hello World -->
+      <div v-if="currentTab === 0">
+        <h2>Step 1: Hello Vue</h2>
+        <p>{{ message }}</p>
+      </div>
+
+      <!-- Step 2: Input Binding -->
+      <div v-if="currentTab === 1">
+        <h2>Step 2: Two-way Binding</h2>
+        <input v-model="name" placeholder="Enter your name" />
+        <p>Hello, {{ name }}</p>
+      </div>
+
+      <!-- Step 3: Add Task -->
+      <div v-if="currentTab === 2">
+        <h2>Step 3: Add Tasks</h2>
+        <input v-model="newTask" placeholder="Enter task" />
+        <button @click="addTask">Add</button>
+        <ul>
+          <li v-for="(task, i) in tasks" :key="i">{{ task }}</li>
+        </ul>
+      </div>
+
+      <!-- Step 4: Delete Task -->
+      <div v-if="currentTab === 3">
+        <h2>Step 4: Add + Delete</h2>
+        <input v-model="newTask" placeholder="Enter task" />
+        <button @click="addTask">Add</button>
+        <ul>
+          <li v-for="(task, i) in tasks" :key="i">
+            {{ task }}
+            <button @click="deleteTask(i)">❌</button>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Step 5: Edit Task -->
+      <div v-if="currentTab === 4">
+        <h2>Step 5: Full CRUD (Edit)</h2>
+        <input v-model="newTask" placeholder="Enter task" />
+        <button @click="addTask">Add</button>
+        <ul>
+          <li v-for="(task, i) in tasks" :key="i">
+            <span v-if="editIndex !== i">{{ task }}</span>
+            <input v-else v-model="editedTask" />
+
+            <button v-if="editIndex !== i" @click="startEdit(i, task)">✏️</button>
+            <button v-else @click="saveEdit(i)">💾</button>
+            <button @click="deleteTask(i)">❌</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vue 3 CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script>
+    const { createApp } = Vue
+
+    createApp({
+      data() {
+        return {
+          tabs: [
+            { name: "Hello" },
+            { name: "Input" },
+            { name: "Add" },
+            { name: "Delete" },
+            { name: "Edit" }
+          ],
+          currentTab: 0,
+          // Step 1
+          message: "Welcome to Vue 3!",
+          // Step 2
+          name: "",
+          // Step 3+
+          newTask: "",
+          tasks: [],
+          // Step 5
+          editIndex: -1,
+          editedTask: ""
+        }
+      },
+      methods: {
+        addTask() {
+          if (this.newTask.trim()) {
+            this.tasks.push(this.newTask)
+            this.newTask = ""
+          }
+        },
+        deleteTask(index) {
+          this.tasks.splice(index, 1)
+        },
+        startEdit(index, task) {
+          this.editIndex = index
+          this.editedTask = task
+        },
+        saveEdit(index) {
+          if (this.editedTask.trim()) {
+            this.tasks[index] = this.editedTask
+            this.editIndex = -1
+            this.editedTask = ""
+          }
+        }
+      }
+    }).mount("#app")
+  </script>
+</body>
+</html>
